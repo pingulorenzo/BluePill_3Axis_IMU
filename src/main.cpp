@@ -83,11 +83,6 @@ void loop(){
     AcY -= ((int16_t)AcYOff);
     AcZ -= ((int16_t)AcZOff);
 
-    // Divide by SCALE_FACTOR for the selected mode (8192 for 4g sensitivity)
-    FAcX = AcX / SCALE_FACTOR;
-    FAcY = AcY / SCALE_FACTOR;
-    FAcZ = AcZ / SCALE_FACTOR;
-
     // check for one byte and notify by turning on LED
     digitalWrite(LED_BLUE, HIGH);
     if (Serial1.available() > 0){
@@ -95,9 +90,9 @@ void loop(){
 
         // Cast to uint16 the values*100 to send on Serial Port
         uint16_t serial_ax, serial_ay, serial_az;
-        serial_ax = uint16_t(FAcX*100);
-        serial_ay = uint16_t(FAcY*100);
-        serial_az = uint16_t(FAcZ*100);
+        serial_ax = (uint16_t)AcX;
+        serial_ay = (uint16_t)AcY;
+        serial_az = (uint16_t)AcZ;
 
         // Split High and Low
         uint8_t serial_hax, serial_lax, serial_hay, serial_lay, serial_haz, serial_laz;
