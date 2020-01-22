@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-#include<Wire.h>
+#include <Wire.h>
 
 TwoWire WIRE2 (2, I2C_FAST_MODE);
 #define Wire WIRE2
@@ -27,9 +27,9 @@ void calibrateMPU(){
         Wire.endTransmission(false);
 
         Wire.requestFrom(MPU, 6);  // request a total of 6 registers
-        AcXOff += Wire.read()<<8|Wire.read();  // 0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L)     
-        AcYOff += Wire.read()<<8|Wire.read();  // 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
-        AcZOff += Wire.read()<<8|Wire.read();  // 0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L)
+        AcXOff += Wire.read() << 8 | Wire.read();  // 0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L)     
+        AcYOff += Wire.read() << 8 | Wire.read();  // 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
+        AcZOff += Wire.read() << 8 | Wire.read();  // 0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L)
         delay(50);
     }
 
@@ -81,27 +81,27 @@ void loop(){
     // Subtract Offsets
     AcX -= ((int16_t)AcXOff);
     AcY -= ((int16_t)AcYOff);
-    AcZ -= ((int16_t)AcZOff);
+    AcZ -= ((int16_t)AcZOff);        
+
+    // Cast to uint16 the values*100 to send on Serial Port
+    uint16_t serial_ax, serial_ay, serial_az;
+    serial_ax = (uint16_t)AcX;
+    serial_ay = (uint16_t)AcY;
+    serial_az = (uint16_t)AcZ;
+
+    // Split High and Low
+    uint8_t serial_hax, serial_lax, serial_hay, serial_lay, serial_haz, serial_laz;
+    serial_hax = serial_ax >> 8;
+    serial_lax = serial_ax & 0x00FF;
+    serial_hay = serial_ay >> 8;
+    serial_lay = serial_ay & 0x00FF;
+    serial_haz = serial_az >> 8;
+    serial_laz = serial_az & 0x00FF;
 
     // check for one byte and notify by turning on LED
     digitalWrite(LED_BLUE, HIGH);
     if (Serial1.available() > 0){
-        Serial1.read();        
-
-        // Cast to uint16 the values*100 to send on Serial Port
-        uint16_t serial_ax, serial_ay, serial_az;
-        serial_ax = (uint16_t)AcX;
-        serial_ay = (uint16_t)AcY;
-        serial_az = (uint16_t)AcZ;
-
-        // Split High and Low
-        uint8_t serial_hax, serial_lax, serial_hay, serial_lay, serial_haz, serial_laz;
-        serial_hax = serial_ax >> 8;
-        serial_lax = serial_ax & 0x00FF;
-        serial_hay = serial_ay >> 8;
-        serial_lay = serial_ay & 0x00FF;
-        serial_haz = serial_az >> 8;
-        serial_laz = serial_az & 0x00FF;
+        Serial1.read();
 
         // Send on serial
         Serial1.write(serial_hax);
@@ -119,5 +119,5 @@ void loop(){
     // Serial1.println("DEBUG");
     
     // Delay 100 ms
-    delay(100);
+    // delay(100);
 }
