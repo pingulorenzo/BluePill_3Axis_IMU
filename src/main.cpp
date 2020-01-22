@@ -30,6 +30,7 @@ void calibrateMPU(){
         AcXOff += Wire.read() << 8 | Wire.read();  // 0x3B (ACCEL_XOUT_H) & 0x3C (ACCEL_XOUT_L)     
         AcYOff += Wire.read() << 8 | Wire.read();  // 0x3D (ACCEL_YOUT_H) & 0x3E (ACCEL_YOUT_L)
         AcZOff += Wire.read() << 8 | Wire.read();  // 0x3F (ACCEL_ZOUT_H) & 0x40 (ACCEL_ZOUT_L)
+
         delay(50);
     }
 
@@ -43,6 +44,9 @@ void calibrateMPU(){
 }
 
 void setup(){
+    // Wait for rise time
+    delay(500);
+    
     // Start LED Pins
     pinMode(LED_BLUE, OUTPUT);
     pinMode(LED_RED, OUTPUT);
@@ -81,7 +85,7 @@ void loop(){
     // Subtract Offsets
     AcX -= ((int16_t)AcXOff);
     AcY -= ((int16_t)AcYOff);
-    AcZ -= ((int16_t)AcZOff);        
+    AcZ -= ((int16_t)AcZOff);
 
     // Cast to uint16 the values*100 to send on Serial Port
     uint16_t serial_ax, serial_ay, serial_az;
@@ -102,7 +106,7 @@ void loop(){
     digitalWrite(LED_BLUE, HIGH);
     if (Serial1.available() > 0){
         Serial1.read();
-
+        
         // Send on serial
         Serial1.write(serial_hax);
         Serial1.write(serial_lax);
@@ -116,8 +120,8 @@ void loop(){
     }
     
     // DEBUG SECTION
-    // Serial1.println("DEBUG");
-    
-    // Delay 100 ms
-    // delay(100);
+    // Serial1.println();
+
+    // Delay 20 ms
+    delay(20);
 }
