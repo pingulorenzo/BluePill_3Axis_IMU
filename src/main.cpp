@@ -1,6 +1,6 @@
 #include <Arduino.h>
 
-#include<Wire.h>
+#include <Wire.h>
 
 TwoWire WIRE2 (2, I2C_FAST_MODE);
 #define Wire WIRE2
